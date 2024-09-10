@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/team_pokemon_edit.json",
+  "type": "object",
+  "properties": {
+    "team_id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "user_id": {
+      "type": "integer",
+      "minimum": 1
+    }, 
+    "pokemon": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "properties": {
+          "pokemon_name": {
+            "type": "string",
+            "minimum": 1
+          },
+          "pokemon_id":{
+            "type": "integer"
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "nickname": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 50
+          }
+        },
+        "required": ["pokemon_id", "position", "pokemon_name"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["team_id"],
+  "additionalProperties": false
+}

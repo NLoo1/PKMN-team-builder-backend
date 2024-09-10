@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "properties": {
+    "team_id": {
+        "type": "integer",
+        "minLength": 1
+    },
+    "team_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "user_id": {
+      "type": "integer"
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "team_name",
+    "user_id"
+  ]
+}
