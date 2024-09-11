@@ -64,36 +64,40 @@ class Team {
     return result.rows;
   }
 
-  /** Find all teams from a user.
-   *
-   * @param {String} username
-   * @returns {Array[Team]}
-   **/
+  /** Find all teams for a given username.
+ * 
+ * @param {string} username - The username for which to find teams.
+ * @returns {Array[Team]}
+ **/
+static async findAllTeamsByUsername(username) {
+  // Find the user ID by username
+  const userIdResult = await db.query(
+    `SELECT user_id FROM users WHERE username = $1`, [username]
+  );
 
-  static async findAllTeamsByUser(username) {
-
-    // Find the user id of a given username
-    const user_id = await db.query(
-      `SELECT user_id FROM users WHERE username = $1`, [username.username]
-    )
-
-    const resp = user_id.rows[0].user_id
-
-    // Then get all teams under that id
-    const result = await db.query(
-          `SELECT team_id,
-                  team_name,
-                  user_id AS "isAdmin",
-                  created_at
-           FROM teams
-           WHERE user_id =$1
-           ORDER BY team_id`, [resp]
-    );
-
-    // Don't throw error for /my-teams route; just show they have n oteams
-    if(result.rows.length <=0) console.debug('Warning: no teams under this user')
-    return result.rows;
+  const userId = userIdResult.rows[0]?.user_id;
+  
+  if (!userId) {
+    console.debug('Warning: no user found with this username');
+    return [];
   }
+
+  // Get all teams for the found user ID
+  const teamsResult = await db.query(
+    `SELECT team_id,
+            team_name,
+            user_id AS "isAdmin",
+            created_at
+     FROM teams
+     WHERE user_id = $1
+     ORDER BY team_id`, [userId]
+  );
+
+  // Don't throw an error if no teams are found
+  if (teamsResult.rows.length <= 0) console.debug('Warning: no teams under this user');
+  return teamsResult.rows;
+}
+
 
   /**
    * Find a given team (by name) in a user's owned teams

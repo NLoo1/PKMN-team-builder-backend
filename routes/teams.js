@@ -55,12 +55,26 @@ router.get("/", async function (req, res, next) {
   }
 });
 
+/** GET / => { teams: [ {team_id, team_name, user_id, created_at }, ... ] }
+ *
+ * @returns {[Team]} - all teams
+ *
+ **/
+
+router.get("/user/:id", async function (req, res, next) {
+  try {
+    const teams = await Team.findAllTeamsByUsername(req.params.id);
+    return res.json( teams );
+  } catch (err) {
+    return next(err);
+  }
+});
+
 
 /** GET /[team] => { team }
  *
  * @returns {{Team} }
  *
- * @requires token
  **/
 
 router.get("/:id", async function (req, res, next) {

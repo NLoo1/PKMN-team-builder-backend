@@ -10,6 +10,7 @@ const express = require("express");
 const { ensureCorrectUserOrAdmin, ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
+const Team = require("../models/team")
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
@@ -72,12 +73,12 @@ router.get("/", ensureAdmin, async function (req, res, next) {
 router.get("/:username", ensureLoggedIn, async function (req, res, next) {
   try {
     const user = await User.get(req.params.username);
-    return res.json({ user });
+    const teams = await Team.findAllTeamsByUsername(req.params.username);
+    return res.json({ user, teams });
   } catch (err) {
     return next(err);
   }
 });
-
 
 /** PATCH /[username] { user } => { user }
  *

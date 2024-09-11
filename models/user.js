@@ -90,7 +90,7 @@ class User {
             email,
             is_admin)
            VALUES ($1, $2, $3, $4)
-           RETURNING username, email, is_admin AS "isAdmin"`,
+           RETURNING user_id, username, email, is_admin AS "isAdmin"`,
         [
           username,
           hashedPassword,

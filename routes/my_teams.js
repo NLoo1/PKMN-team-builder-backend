@@ -21,8 +21,9 @@ const router = express.Router();
 
 router.get("/", ensureLoggedIn, async function (req, res, next) {
   try {
-    const teams = await Team.findAllTeamsByUser(res.locals.user);
-    return res.json( teams );
+    const username = res.locals.user.username; // Use the username of the logged-in user
+    const teams = await Team.findAllTeamsByUsername(username);
+    return res.json(teams);
   } catch (err) {
     return next(err);
   }
