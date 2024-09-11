@@ -57,7 +57,7 @@ router.post("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  *
  **/
 
-router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
   try {
     const pkmn = await Teams_Pokemon.findAll(req.params.id);
     // console.log(pkmn)

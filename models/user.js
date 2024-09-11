@@ -35,7 +35,7 @@ class User {
   static async authenticate(username, password) {
     // try to find the user first
     const result = await db.query(
-          `SELECT username,
+          `SELECT user_id, username,
                   password,
                   email,
                   is_admin AS "isAdmin"

@@ -46,7 +46,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * @requires token - user needs to be logged in
  **/
 
-router.get("/", ensureLoggedIn, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
   try {
     const teams = await Team.findAll();
     return res.json( teams );
@@ -63,7 +63,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  * @requires token
  **/
 
-router.get("/:id", ensureLoggedIn, async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
   try {
     const team = await Team.get(req.params.id);
     return res.json( team );

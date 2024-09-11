@@ -32,7 +32,7 @@ router.post("/token", async function (req, res, next) {
     const { username, password } = req.body;
     const user = await User.authenticate(username, password);
     const token = createToken(user);
-    return res.json({ token, isAdmin: user.isAdmin});
+    return res.json({ token, isAdmin: user.isAdmin, id: user.user_id});
   } catch (err) {
     return next(err);
   }
