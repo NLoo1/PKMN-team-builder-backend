@@ -48,7 +48,7 @@ class Teams_Pokemon {
    * @throws {NotFoundError} if no Pokemon are found for the team.
    **/
   static async findAll(team_id) {
-    console.log(team_id)
+    // console.log(team_id)
     const results = await db.query(
       `SELECT pokemon_name, pokemon_id, position
        FROM teams_pokemon
@@ -62,37 +62,52 @@ class Teams_Pokemon {
     return results.rows;
   }
 
-  /** Update team of Pokémon with `data`.
-   *
-   * @param {number} teamPokemonId - The ID of the Pokemon in the team.
-   * @param {Object} data - An object containing fields to update.
-   * @returns {Object} The updated Pokemon object.
-   * @throws {NotFoundError} if no such team Pokémon is found.
-   */
-  static async update(teamPokemonId, data) {
-    const { setCols, values } = sqlForPartialUpdate(
-      data,
-      {
-        pokemon_id: "pokemon_id",
-        team_id: "team_id",
-        position: "position"
-      }
-    );
-    const teamPokemonIdVarIdx = "$" + (values.length + 1);
-
-    const querySql = `UPDATE teams_pokemon 
-                      SET ${setCols} 
-                      WHERE id = ${teamPokemonIdVarIdx} 
-                      RETURNING id AS "teamPokemonId",
-                                team_id,
-                                pokemon_id,
-                                position`;
-    const result = await db.query(querySql, [...values, teamPokemonId]);
-    const teamPokemon = result.rows[0];
-
-    if (!teamPokemon) throw new NotFoundError(`No team Pokémon: ${teamPokemonId}`);
-    return teamPokemon;
+/**
+ * Update the entire team of Pokémon for the given team ID. Replaces existing team with new Pokémon.
+ *
+ * @param {Object} data - An object containing the team and Pokémon data.
+ * @param {number} data.team_id - The ID of the team to update.
+ * @param {Array<Object>} data.pokemon - An array of Pokémon objects to update the team with.
+ * @param {number} data.pokemon[].pokemon_id - The ID of the Pokémon.
+ * @param {string} data.pokemon[].pokemon_name - The name of the Pokémon.
+ * @param {number} data.pokemon[].position - The position of the Pokémon in the team.
+ * @param {string} [data.pokemon[].nickname] - An optional nickname for the Pokémon.
+ * @returns {Array<Object>} - The updated list of Pokémon for the team.
+ * @throws {NotFoundError} if the team does not exist or a Pokémon is not found.
+ */
+static async update({user_id, team_id, pokemon }) {
+  if (!Array.isArray(pokemon) || pokemon.length === 0) {
+    throw new Error('No Pokémon data provided for update.');
   }
+
+  // Clear the current team before adding the new Pokémon list
+  await db.query("DELETE FROM teams_pokemon WHERE team_id = $1", [team_id]);
+
+  // Initialize an array to store the updated Pokémon
+  const updatedPokemons = [];
+
+  // Loop through each Pokémon in the provided list and add them back to the team
+  for (const poke of pokemon) {
+    const { pokemon_id, pokemon_name, position, nickname } = poke;
+
+    const result = await db.query(
+      `INSERT INTO teams_pokemon (team_id, pokemon_id, pokemon_name, position, nickname, user_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id AS "teamPokemonId", team_id, pokemon_id, position, pokemon_name, nickname, user_id`,
+      [team_id, pokemon_id, pokemon_name, position, nickname, user_id || ""]
+    );
+
+    updatedPokemons.push(result.rows[0]);
+  }
+
+  return updatedPokemons;
+}
+
+
+
+
+
+
 
   /** Delete given Pokémon from a team; returns undefined.
    *
@@ -171,6 +186,7 @@ class Teams_Pokemon {
   }
   
 
+  
 }
 
 module.exports = Teams_Pokemon;

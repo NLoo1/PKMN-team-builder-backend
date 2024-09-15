@@ -10,9 +10,11 @@ function createToken(user) {
   let payload = {
     username: user.username,
     isAdmin: user.isAdmin || false,
+    user_id: user.user_id // Include user_id in the token payload
   };
 
   return jwt.sign(payload, SECRET_KEY);
 }
+
 
 module.exports = { createToken };

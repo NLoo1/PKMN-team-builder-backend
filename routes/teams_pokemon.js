@@ -74,6 +74,8 @@ router.get("/:id", async function (req, res, next) {
  **/
 
 router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+
+  // console.log(req.body)
     try {
       const validator = jsonschema.validate(req.body, teamsPokemonUpdate);
       if (!validator.valid) {
@@ -85,7 +87,7 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
       if (req.body.newOrder) {
         await Teams_Pokemon.reorderPokemons(req.params.id, req.body.newOrder);
       } else {
-        const pkmn = await Teams_Pokemon.update(req.params.id, req.body);
+        const pkmn = await Teams_Pokemon.update(req.body);
         return res.json({ pkmn });
       }
   

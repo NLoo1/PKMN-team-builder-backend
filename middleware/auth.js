@@ -18,11 +18,19 @@ const User = require('../models/user')
  */
 
 function authenticateJWT(req, res, next) {
+
+
   try {
     const authHeader = req.headers && req.headers.authorization;
     if (authHeader) {
       const token = authHeader.replace(/^[Bb]earer /, "").trim();
       res.locals.user = jwt.verify(token, SECRET_KEY);
+
+      
+
+      // console.log("Token received:", token);
+res.locals.user = jwt.verify(token, SECRET_KEY);
+// console.log("Decoded user:", res.locals.user);
     }
     return next();
   } catch (err) {
@@ -90,13 +98,12 @@ async function ensureCorrectUserOrAdmin(req, res, next) {
         return next(new UnauthorizedError('Team not found'));
       }
 
-      if (team.user_id){
-        console.log(res.locals.user)
-        const resp = await User.get(res.locals.user.username)
-        if(resp.user_id !== team.user_id){
-          return next(new UnauthorizedError)
+      if (team.user_id) {
+        if (user.user_id === team.user_id) {  // Compare user_id now
+          return next();
+        } else {
+          return next(new UnauthorizedError());
         }
-        return next();
       }
     }
     
@@ -106,6 +113,7 @@ async function ensureCorrectUserOrAdmin(req, res, next) {
     return next(err);
   }
 }
+
 
 
 module.exports = {
