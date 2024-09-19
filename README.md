@@ -47,6 +47,9 @@ The .env file should have credentials for Express to access your database by its
 ##     Models
 Pokemon Team Builder's data is split between three tables: `User`, `Team`, and `teams_pokemon`. In the backend, a model and route for each table is given and actively used in the API. To see exactly how they are used, see `backend/app.js`.
 
+## Tests
+Run tests with `jest` or `npm test`. 
+
 ## Routes
 The team builder's frontend operates on these routes:
 - GET / 
