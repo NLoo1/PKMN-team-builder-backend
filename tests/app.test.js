@@ -17,7 +17,3 @@ test("not found for site 404 (test stack print)", async function () {
   expect(resp.statusCode).toEqual(404);
   delete process.env.NODE_ENV;
 });
-
-afterAll(function () {
-  db.end();
-});

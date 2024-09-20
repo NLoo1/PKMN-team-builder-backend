@@ -18,6 +18,7 @@ class Teams_Pokemon {
    * @throws {NotFoundError} if team does not exist.
    **/
   static async createNew(team_id, { pokemon_name, pokemon_id, position, nickname = '' }) {
+
     // Check if team already exists; throw NotFound otherwise
     const teamExists = await db.query(
       `SELECT * FROM teams WHERE team_id = $1`, [team_id]
@@ -102,12 +103,6 @@ static async update({user_id, team_id, pokemon }) {
 
   return updatedPokemons;
 }
-
-
-
-
-
-
 
   /** Delete given Pokémon from a team; returns undefined.
    *
