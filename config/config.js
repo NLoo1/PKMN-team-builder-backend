@@ -15,12 +15,12 @@ const PORT = +process.env.PORT || 3001;
 
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 
-console.log("Poke-API Config:".green);
-console.log("SECRET_KEY:".yellow, SECRET_KEY);
-console.log("PORT:".yellow, PORT.toString());
-console.log("BCRYPT_WORK_FACTOR".yellow, BCRYPT_WORK_FACTOR);
-console.log("Database:".yellow, DB_NAME);
-console.log("---");
+// console.log("Poke-API Config:".green);
+// console.log("SECRET_KEY:".yellow, SECRET_KEY);
+// console.log("PORT:".yellow, PORT.toString());
+// console.log("BCRYPT_WORK_FACTOR".yellow, BCRYPT_WORK_FACTOR);
+// console.log("Database:".yellow, DB_NAME);
+// console.log("---");
 
 module.exports = {
   SECRET_KEY,

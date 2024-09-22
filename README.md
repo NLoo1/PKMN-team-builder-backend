@@ -43,7 +43,9 @@ The .env file should have credentials for Express to access your database by its
 Pokemon Team Builder's data is split between three tables: `User`, `Team`, and `teams_pokemon`. In the backend, a model and route for each table is given and actively used in the API. 
 
 ## Tests
-Run tests with `jest`. 
+Run tests with `npm test` or `jest -i`. 
+
+**Given the nature of the test setup, running tests in parallel will always fail due to deadlocking.**
 
 You'll need to make an .env.test file, similar to the .env file. Make sure to add `NODE_ENV=test`.
 

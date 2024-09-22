@@ -125,7 +125,7 @@ static async findAllTeamsByUsername(username) {
     const result = await db.query(
       `SELECT team_id,
               team_name,
-              user_id AS "isAdmin",
+              user_id,
               created_at
        FROM teams
        WHERE user_id = $1 AND team_name = $2

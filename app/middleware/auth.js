@@ -54,9 +54,12 @@ function ensureLoggedIn(req, res, next) {
 
 function ensureAdmin(req, res, next) {
   try {
-    if (!res.locals.user || res.locals.isAdmin=='false') {
+    if (!res.locals.user || res.locals.user.isAdmin==false || res.locals.user.isAdmin =='false') {
       throw new UnauthorizedError();
     }
+
+    // console.log(res.locals.user)
+    // console.log("Bro is authorized")
     return next();
   } catch (err) {
     return next(err);

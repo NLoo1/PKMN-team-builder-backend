@@ -8,153 +8,142 @@ const {
   ensureAdmin,
   ensureCorrectUserOrAdmin,
 } = require("../../app/middleware/auth");
-
-
 const { SECRET_KEY } = require("../../config/config");
+
 const testJwt = jwt.sign({ username: "test", isAdmin: false }, SECRET_KEY);
 const badJwt = jwt.sign({ username: "test", isAdmin: false }, "wrong");
 
+describe("Authentication Middleware", () => {
+  describe("authenticateJWT", () => {
+    const next = jest.fn();
 
-describe("authenticateJWT", function () {
-  test("works: via header", function () {
-    expect.assertions(2);
-    //there are multiple ways to pass an authorization token, this is how you pass it in the header.
-    //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
-    const req = { headers: { authorization: `Bearer ${testJwt}` } };
-    const res = { locals: {} };
-    const next = function (err) {
-      expect(err).toBeFalsy();
-    };
-    authenticateJWT(req, res, next);
-    expect(res.locals).toEqual({
-      user: {
-        iat: expect.any(Number),
-        username: "test",
-        isAdmin: false,
-      },
+    test("works: via header", () => {
+      const req = { headers: { authorization: `Bearer ${testJwt}` } };
+      const res = { locals: {} };
+
+      authenticateJWT(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      expect(res.locals).toEqual({
+        user: {
+          iat: expect.any(Number),
+          username: "test",
+          isAdmin: false,
+        },
+      });
+    });
+
+    test("works: no header", () => {
+      const req = {};
+      const res = { locals: {} };
+
+      authenticateJWT(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      expect(res.locals).toEqual({});
+    });
+
+    test("works: invalid token", () => {
+      const req = { headers: { authorization: `Bearer ${badJwt}` } };
+      const res = { locals: {} };
+
+      authenticateJWT(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+      expect(res.locals).toEqual({});
     });
   });
 
-  test("works: no header", function () {
-    expect.assertions(2);
-    const req = {};
-    const res = { locals: {} };
-    const next = function (err) {
-      expect(err).toBeFalsy();
-    };
-    authenticateJWT(req, res, next);
-    expect(res.locals).toEqual({});
+  describe("ensureLoggedIn", () => {
+    const next = jest.fn();
+
+    test("works", () => {
+      const req = {};
+      const res = { locals: { user: { username: "test", isAdmin: false } } };
+
+      ensureLoggedIn(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+
+    test("unauth if no login", () => {
+      const req = {};
+      const res = { locals: {} };
+
+      ensureLoggedIn(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
+    });
   });
 
-  test("works: invalid token", function () {
-    expect.assertions(2);
-    const req = { headers: { authorization: `Bearer ${badJwt}` } };
-    const res = { locals: {} };
-    const next = function (err) {
-      expect(err).toBeFalsy();
-    };
-    authenticateJWT(req, res, next);
-    expect(res.locals).toEqual({});
-  });
-});
+  describe("ensureAdmin", () => {
+    const next = jest.fn();
 
+    test("works", () => {
+      const req = {};
+      const res = { locals: { user: { username: "test", isAdmin: true } } };
 
-describe("ensureLoggedIn", function () {
-  test("works", function () {
-    expect.assertions(1);
-    const req = {};
-    const res = { locals: { user: { username: "test", is_admin: false } } };
-    const next = function (err) {
-      expect(err).toBeFalsy();
-    };
-    ensureLoggedIn(req, res, next);
-  });
+      ensureAdmin(req, res, next);
 
-  test("unauth if no login", function () {
-    expect.assertions(1);
-    const req = {};
-    const res = { locals: {} };
-    const next = function (err) {
-      expect(err).toBeTruthy();
-    };
-    ensureLoggedIn(req, res, next);
-  });
-});
+      expect(next).toHaveBeenCalled();
+    });
 
+    test("unauth if not admin", () => {
+      const req = {};
+      const res = { locals: { user: { username: "test", isAdmin: false } } };
 
-describe("ensureAdmin", function () {
-  test("works", function () {
-    expect.assertions(1);
-    const req = {};
-    const res = { locals: { user: { username: "test", isAdmin: true } } };
-    const next = function (err) {
-      expect(err).toBeFalsy();
-    };
-    ensureAdmin(req, res, next);
+      ensureAdmin(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+
+    test("unauth if anon", () => {
+      const req = {};
+      const res = { locals: {} };
+
+      ensureAdmin(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedError));
+    });
   });
 
-  test("unauth if not admin", function () {
-    const req = {};
-    const res = { locals: { user: { username: "test", isAdmin: false } } };
-    const next = function (err) {
-      expect(err).toBeTruthy();
+  describe("ensureCorrectUserOrAdmin", () => {
+    const next = jest.fn();
 
-    };
-    ensureAdmin(req, res, next);
-  });
+    test("works: admin", () => {
+      const req = { params: { username: "test" } };
+      const res = { locals: { user: { username: "admin", isAdmin: true } } };
 
-  test("unauth if anon", function () {
-    expect.assertions(1);
-    const req = {};
-    const res = { locals: {} };
-    const next = function (err) {
-      expect(err).toBeTruthy();
-    };
-    ensureAdmin(req, res, next);
-  });
-});
+      ensureCorrectUserOrAdmin(req, res, next);
 
+      expect(next).toHaveBeenCalled();
+    });
 
-describe("ensureCorrectUserOrAdmin", function () {
-  test("works: admin", function () {
-    expect.assertions(1);
-    const req = { params: { username: "test" } };
-    const res = { locals: { user: { username: "admin", isAdmin: true } } };
-    const next = function (err) {
-      expect(err).toBeFalsy();
-    };
-    ensureCorrectUserOrAdmin(req, res, next);
-  });
+    test("works: same user", () => {
+      const req = { params: { username: "test" } };
+      const res = { locals: { user: { username: "test", isAdmin: false } } };
 
-  test("works: same user", function () {
-    expect.assertions(1);
-    const req = { params: { username: "test" } };
-    const res = { locals: { user: { username: "test", isAdmin: false } } };
-    const next = function (err) {
-      expect(err).toBeFalsy();
-    };
-    ensureCorrectUserOrAdmin(req, res, next);
-  });
+      ensureCorrectUserOrAdmin(req, res, next);
 
-  test("unauth: mismatch", function () {
-    expect.assertions(1);
-    const req = { params: { username: "wrong" } };
-    const res = { locals: { user: { username: "test", isAdmin: false } } };
-    const next = function (err) {
-      expect(err).toBeTruthy();
+      expect(next).toHaveBeenCalled();
+    });
 
-    };
-    ensureCorrectUserOrAdmin(req, res, next);
-  });
+    test("unauth: mismatch", () => {
+      const req = { params: { username: "wrong" } };
+      const res = { locals: { user: { username: "test", isAdmin: false } } };
 
-  test("unauth: if anon", function () {
-    expect.assertions(1);
-    const req = { params: { username: "test" } };
-    const res = { locals: {} };
-    const next = function (err) {
-      expect(err).toBeTruthy();
+      ensureCorrectUserOrAdmin(req, res, next);
 
-    };
-    ensureCorrectUserOrAdmin(req, res, next);
+      expect(next).toHaveBeenCalled();
+    });
+
+    test("unauth: if anon", () => {
+      const req = { params: { username: "test" } };
+      const res = { locals: {} };
+
+      ensureCorrectUserOrAdmin(req, res, next);
+
+      expect(next).toHaveBeenCalled();
+    });
   });
 });

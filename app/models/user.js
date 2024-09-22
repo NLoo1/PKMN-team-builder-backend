@@ -193,17 +193,28 @@ class User {
    * */
 
   static async remove(username) {
+    // Delete related teams first
+    await db.query(
+      `DELETE
+       FROM teams
+       WHERE user_id = (SELECT user_id FROM users WHERE username = $1)`,
+      [username]
+    );
+  
+    // Then delete the user
     let result = await db.query(
-          `DELETE
-           FROM users
-           WHERE username = $1
-           RETURNING username`,
-        [username],
+      `DELETE
+       FROM users
+       WHERE username = $1
+       RETURNING username`,
+      [username]
     );
     const user = result.rows[0];
-
+  
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
+  
+  
 
 
 }

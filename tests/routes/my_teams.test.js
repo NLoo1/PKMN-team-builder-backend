@@ -30,31 +30,6 @@ const sampleTeam = {
 // Generating token for the sample user
 const token = createToken(sampleUser);
 
-beforeAll(async () => {
-  await db.query(`
-    CREATE TABLE users (
-      user_id SERIAL PRIMARY KEY,
-      username TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
-      email TEXT NOT NULL,
-      is_admin BOOLEAN DEFAULT false
-    );
-    
-    CREATE TABLE teams (
-      team_id SERIAL PRIMARY KEY,
-      team_name TEXT UNIQUE NOT NULL,
-      user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-  `);
-
-});
-
-afterAll(async () => {
-  await db.query("DROP TABLE teams");
-  await db.query("DROP TABLE users");
-});
-
 describe("GET /teams", () => {
   test("successfully retrieves all teams for logged-in user", async () => {
     // Mock the findAllTeamsByUsername method to return sample teams
