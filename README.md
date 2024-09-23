@@ -33,6 +33,7 @@ On initialization, `testadmin` is the only account with administrative privilege
 `DB_USERNAME= `
 `DB_PASSWORD=`
 `DB_NAME=pokeapi`
+`SECRET_KEY=somekeyhere`
 
 The .env file should have credentials for Express to access your database by itself and commit any transactions. This is in the root folder.
 1. In the backend, run `psql -f pokeapi.sql` and press `Enter` or `Return`when prompted. This will create the required tables and schema for Pokemon Team Builder, while creating a `testuser`, `testadmin`, and `test-team` with Bulbasaur, Ivysaur, Charizard, Charmander, Charmeleon, and Charizard (the first 6 Pokemon).

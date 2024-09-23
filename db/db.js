@@ -1,13 +1,9 @@
 "use strict";
 const { Pool } = require("pg");
+const {DATABASE_URL} = require('../config/config')
 
 // Use the DATABASE_URL from the environment variables, or fallback to local settings for development
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,  // Render requires this for secure connections
-  },
-});
+const pool = new Pool(typeof DATABASE_URL === "string" ? { connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } } : DATABASE_URL);
 
 // Optional: to log successful connections or errors
 pool.on('connect', () => {

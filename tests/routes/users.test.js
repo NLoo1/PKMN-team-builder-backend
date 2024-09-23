@@ -32,7 +32,9 @@ describe("POST /users", () => {
         email: "anotheruser@example.com",
         isAdmin: false
       })
-      .set("authorization", `Bearer tokentokentokentokentoken`);
+      .set("authorization", `Bearer ${global.token}`);
+
+      // console.log(global.token)
 
     // console.log(resp)
     expect(resp.statusCode).toBe(401);

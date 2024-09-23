@@ -18,19 +18,24 @@ const User = require('../models/user')
  */
 
 function authenticateJWT(req, res, next) {
+  const authHeader = req.headers && req.headers.authorization;
+  // console.log("Authorization header:", authHeader); // Log auth header
 
-
-  try {
-    const authHeader = req.headers && req.headers.authorization;
-    if (authHeader) {
-      const token = authHeader.replace(/^[Bb]earer /, "").trim();
+  if (authHeader) {
+    const token = authHeader.replace(/^[Bb]earer /, "").trim();
+    // console.log("Received token: ", token); // Log token
+    try {
       res.locals.user = jwt.verify(token, SECRET_KEY);
+    } catch (err) {
+      console.log("JWT error:", err);
     }
-    return next();
-  } catch (err) {
-    return next();
+  } else {
+    console.log("No Authorization header provided");
   }
+  return next();
 }
+
+
 
 /** Middleware to use when they must be logged in.
  *
@@ -39,6 +44,7 @@ function authenticateJWT(req, res, next) {
 
 function ensureLoggedIn(req, res, next) {
   try {
+    console.log(res.locals.user)
     if (!res.locals.user) throw new UnauthorizedError();
     return next();
   } catch (err) {
@@ -53,13 +59,11 @@ function ensureLoggedIn(req, res, next) {
  */
 
 function ensureAdmin(req, res, next) {
+  // console.log(res.locals)
   try {
-    if (!res.locals.user || res.locals.user.isAdmin==false || res.locals.user.isAdmin =='false') {
+    if (res.locals.user.isAdmin==false || res.locals.user.isAdmin =='false') {
       throw new UnauthorizedError();
     }
-
-    // console.log(res.locals.user)
-    // console.log("Bro is authorized")
     return next();
   } catch (err) {
     return next(err);
@@ -73,8 +77,12 @@ function ensureAdmin(req, res, next) {
  */
 
 async function ensureCorrectUserOrAdmin(req, res, next) {
+  // console.log("LOCALS ")
+  // console.log(res.locals.user)
   try {
     const user = res.locals.user;
+
+    console.log(user)
     
     // Check for admin role
     if (user.isAdmin) {

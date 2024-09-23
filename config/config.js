@@ -2,7 +2,7 @@
 
 /** Shared config for application; can be required many places. */
 
-const dotenvConfig = { path: process.env.NODE_ENV ? ".env." + process.env.NODE_ENV : ".env" };
+const dotenvConfig = { path: process.env.NODE_ENV ? ".env." + process.env.NODE_ENV : ".env.test"};
 require("dotenv").config(dotenvConfig);
 require("colors");
 
@@ -20,6 +20,7 @@ const DATABASE_URL = process.env.DATABASE_URL || {
 const PORT = +process.env.PORT || 3001;
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 
+
 // console.log("Poke-API Config:".green);
 // console.log("SECRET_KEY:".yellow, SECRET_KEY);
 // console.log("PORT:".yellow, PORT.toString());
@@ -31,5 +32,5 @@ module.exports = {
   SECRET_KEY,
   PORT,
   BCRYPT_WORK_FACTOR,
-  DATABASE_URL,
+  DATABASE_URL: process.env.DATABASE_URL || DATABASE_URL,
 };

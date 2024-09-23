@@ -21,6 +21,7 @@ const router = express.Router();
  * @throws {BadRequestError} if trying to add more than 6 Pokemon or invalid request
  **/
 router.post("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+
   try {
     // Validate request body against schema
     const validator = jsonschema.validate(req.body, teamsPokemonNew);

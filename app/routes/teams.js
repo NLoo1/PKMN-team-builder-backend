@@ -24,6 +24,7 @@ const router = express.Router();
  **/
 
 router.post("/", ensureLoggedIn, async function (req, res, next) {
+  
   try {
     const validator = jsonschema.validate(req.body, teamNewSchema);
     if (!validator.valid) {
@@ -119,6 +120,9 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  **/
 
 router.delete("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+
+
+  // console.log("LOCALS " + res.locals)
   try {
     await Team.remove(req.params.id);
     return res.json({ deleted: req.params.id });
