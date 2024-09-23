@@ -7,10 +7,12 @@ Pokemon Team Builder is a passion project I designed using React and Express. Th
 
 The team builder is complete with user accounts and team creation. 
 
+See live demo [here!](https://pkmn-team-builder-frontend.onrender.com/)
+
 **Users are able to:**
 - Create, delete, and modify their own account
 - Create a team
-	- **Modify that team (WIP)**
+	- Modify that team
 	- Delete team
 - View a table of all Pokemon
 	- Search that table for Pokemon
@@ -86,6 +88,25 @@ The API (`frontend/src/api.js`) uses the following methods:
 - getAllUserTeams(token)
 
 For more details on exact usage, refer to `api.js` and documentation.
+
+**Planned updates**
+As a smaller project, I didn't plan to create a fully functioning website. Some updates are in consideration:
+
+***Pokemon***
+- Moves
+- Held items
+- IV/UV stats
+- Drag and drop rearranging positions
+- Better team editing
+  - Currently, team editing works by simply clearing the team and re-selecting each Pokemon by hand.
+
+***Users and Teams***
+- Upvote/downvote system for teams
+- Search for teams
+  - Sort by top rated, most viewed, new, etc.
+- Profile pictures for users
+
+I plan to add these in the future!
 
 ## Credits
 All Pokemon data is sourced directly from the free open-source Pokemon database API, <a  href="https://pokeapi.co/">PokeAPI.</a> 
